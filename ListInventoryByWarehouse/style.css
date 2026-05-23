@@ -1,0 +1,26 @@
+/* Style cho thẻ Kế hoạch bên cột trái */
+.plan-item {
+    padding: 12px 10px;
+    color: #000;
+    font-weight: 500;
+    font-size: 15px;
+    border: 1px solid #333;
+    text-align: left;
+    cursor: pointer;
+    line-height: 1.4;
+}
+.plan-item:hover {
+    opacity: 0.9;
+}
+
+.bg-success-custom {
+    background-color: #36c963;
+}
+.bg-danger-custom {
+    background-color: #ef4444;
+}
+
+/* Ghi đè css search bar để input text chiếm nhiều diện tích hơn nếu cần */
+.datdp-search-bar-field-container-input {
+    flex-grow: 1;
+}

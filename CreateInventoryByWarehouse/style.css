@@ -1,0 +1,87 @@
+/* Base Styling */
+body {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #000;
+}
+
+/* Form Controls */
+.form-label {
+    font-size: 14px;
+    margin-bottom: 0.3rem;
+}
+
+.form-control, .form-select {
+    border-radius: 0;
+    border-color: #888;
+    height: 38px;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: none;
+    border-color: #4a90e2;
+}
+
+/* Select2 Customization to match input height and borders */
+.select2-container .select2-selection--single {
+    height: 38px !important;
+    border-radius: 0 !important;
+    border-color: #888 !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 36px !important;
+    padding-left: 12px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px !important;
+}
+
+/* Buttons */
+.search-btn {
+    background-color: #729fe8;
+    border: 1px solid #5080c8;
+    border-radius: 0;
+    color: #111;
+    font-weight: 500;
+    padding: 0.375rem 1.5rem;
+}
+.search-btn:hover {
+    background-color: #5c8ae0;
+}
+
+.create-plan-btn {
+    background-color: #52ceb7;
+    border: 1px solid #42aa98;
+    border-radius: 0;
+}
+.create-plan-btn:hover {
+    background-color: #43c0a7;
+}
+
+/* Table Styling */
+.table {
+    border: 1px solid #333;
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background-color: #d1d1d1 !important;
+    border: 1px solid #333;
+    color: #000;
+    font-weight: 600;
+    padding: 12px;
+}
+
+.table tbody td {
+    border: 1px solid #333;
+    padding: 12px;
+    color: #111;
+}
+
+/* Remove bottom margin for specific elements to match design */
+.table-responsive {
+    margin-top: 10px;
+}
