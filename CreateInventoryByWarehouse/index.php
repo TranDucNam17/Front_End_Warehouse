@@ -4,14 +4,17 @@ require_once __DIR__ . "/../../1.SourceCode/2.FrontEnd/config/config.php";
 ?>
 <!-- Import jQuery (vì thư viện MKAC phụ thuộc jQuery) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"></script>
 
 <!-- Import thư viện SearchBar -->
 <link href="<?php echo $cdnServer; ?>/lib/searchBarAll/v2/searchBarAll.css" type="text/css" rel="stylesheet">
 <script src="<?php echo $cdnServer; ?>/lib/searchBarAll/v2/searchBarAll.js"></script>
 
 <!-- Import thư viện Table2 -->
-<script src="<?php echo $cdnServer; ?>/lib/htmlTable2/table.js"></script>
-<link href="<?php echo $cdnServer; ?>/lib/htmlTable2/table.css" type="text/css" rel="stylesheet">
+<!-- <script src="<?php echo $cdnServer; ?>/lib/htmlTable2/table.js"></script>
+<link href="<?php echo $cdnServer; ?>/lib/htmlTable2/table.css" type="text/css" rel="stylesheet"> -->
+<link href="http://192.184.1.112:3901/lib/htmlTable2/table.css" type="text/css" rel="stylesheet" />
+<script src="http://192.184.1.112:3901/lib/htmlTable2/table.js"></script>
 
 <div id="mkacui-root-layout">
   <div id="content-wrapper">

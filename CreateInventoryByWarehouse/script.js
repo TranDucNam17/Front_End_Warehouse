@@ -1,8 +1,8 @@
 // Khai báo các biến toàn cục
-let searchBar;
-let tableInventory;
-let optionSearch = {};
-let optionTable = {};
+var searchBar={};
+var table = {};
+var options = {};
+let totalRow = 0;
 
 // Khởi chạy các hàm theo chuẩn của project
 if (typeof startFunc !== 'undefined') {
@@ -18,7 +18,7 @@ if (typeof startFunc !== 'undefined') {
 
 // 1. Cấu hình và render SearchBar
 async function renderSearchBar() {
-    optionSearch = {
+    options = {
         // language: $.i18n("keyLanguage"), // Tạm bỏ comment nếu có $.i18n
         language: "vi",
         queryFormat: "oracle",
@@ -82,26 +82,26 @@ async function renderSearchBar() {
         ],
         
         onRefresh: async (obj) => {
-            if (tableInventory) tableInventory.setWhereQuery(obj.query);
+            if (table && typeof table.setWhereQuery === 'function') table.setWhereQuery(obj.query);
         },
         onSearch: async (obj) => {
             console.log("Tìm kiếm: ", obj.query);
-            if (tableInventory) tableInventory.setWhereQuery(obj.query);
+            if (table && typeof table.setWhereQuery === 'function') table.setWhereQuery(obj.query);
         },
         onEnter: async (obj) => {
-            if (tableInventory) tableInventory.setWhereQuery(obj.query);
+            if (table && typeof table.setWhereQuery === 'function') table.setWhereQuery(obj.query);
         }
     };
 
     // Render SearchBar
     if (typeof SearchBar !== 'undefined') {
-        searchBar = new SearchBar("#searchbar", optionSearch);
+        searchBar = new SearchBar("#search", options);
     }
 }
 
 // 2. Cấu hình và render Table
 async function renderTable() {
-    optionTable = {
+    option = {
         language: "vi", // Hoặc currentLanguage trong framework
         title: "",
         titleNoData: "Không có dữ liệu",
@@ -112,29 +112,63 @@ async function renderTable() {
 
         getData: {
             func: async (obj) => {
-                // Mock data hiển thị bảng
-                let mockData = [];
-                for(let i=0; i<6; i++) {
-                    mockData.push({ 
-                        Barcode: "2605P20311 01 0000 0001", 
-                        PO_Id: "VA08-1234567", 
-                        Material_Id: "1654654654", 
-                        Material_Name: "NVL Chính", 
-                        Quantity: 1000, 
-                        Unit: "PCs", 
-                        Price: 8.9, 
-                        Rack_Id: "CLI-01", 
-                        Warehouse_Id: "PCB01", 
-                        Import_Date: "2026/01/01" 
-                    });
+                let materialCode = "";
+                let queryString = obj?.whereQuery || obj?.query || "";
+
+                if (queryString) {
+                    const match = queryString.match(/Material_Id\s+(?:LIKE|=)\s+'%?([^'%]+)%?'/i);
+                    if (match && match[1]) {
+                        materialCode = match[1].trim();
+                    }
                 }
-                return mockData;
+
+                const bodyRequest = {
+                    "MATERIAL_CODE": materialCode
+                };
+
+                console.log("Gọi API với body: ", bodyRequest);
+
+                try {
+                    const rs = await ajaxAwait("POST", "http://192.168.10.107:243/api/InventoryByMaterial", bodyRequest);
+                    
+                    // Kiểm tra response chuẩn theo format API 
+                    if (rs?.code === 200 && Array.isArray(rs.data)) {
+                        totalRow = rs.data.length;
+                        
+                        // Map dữ liệu từ API về đúng cấu trúc hiển thị của giao diện
+                        return rs.data.map(item => {
+                            let formattedDate = "";
+                            if (item.RECEIPT_DATE) {
+                                formattedDate = item.RECEIPT_DATE.split(" ")[0].replace(/-/g, "/");
+                            }
+
+                            return {
+                                Barcode: item.LOT_NO || "",           
+                                PO_Id: item.PO_NO || "",             
+                                Material_Id: item.MATERIAL_CODE || "",
+                                Material_Name: item.MATERIAL_NAME || "", 
+                                Quantity: Number(item.QTY_STOCK || 0),
+                                Unit: item.UNIT || "", 
+                                Price: 0,                                             
+                                Rack_Id: item.SHELF || "",          
+                                Warehouse_Id: item.WAREHOUSE_CODE || "", 
+                                Import_Date: formattedDate          
+                            };
+                        });
+                    }
+
+                    totalRow = 0;
+                    return [];
+                } catch (error) {
+                    console.error("Lỗi hệ thống khi gọi API kiểm kê NVL:", error);
+                    return [];
+                }
             }
         },
+
         getPage: {
             func: async (obj) => {
-                // Trả về tổng số bản ghi (Mock là 6)
-                return 6;
+                return totalRow;
             }
         },
 
@@ -153,8 +187,10 @@ async function renderTable() {
     };
 
     // Render HTML Table 2
-    if (typeof Table !== 'undefined') {
-        tableInventory = new Table("#inventoryTable", optionTable);
+    if (typeof TableView !== 'undefined') {
+        table = new TableView("#table", option);
+    } else {
+        console.error("Không tìm thấy class TableView của thư viện htmlTable2!");
     }
 }
 
@@ -174,3 +210,22 @@ $(document).ready(function() {
         }
     });
 });
+
+function ajaxAwait(method, url, body) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+        type: method,
+        url,
+        headers: {
+            // Authorization: "Bearer " + token,
+        },
+        data: JSON.stringify(body),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        processData: false,
+        cache: false,
+        success: (data) => resolve(data),
+        error: (xhr) => reject(xhr),
+        });
+    });
+}
